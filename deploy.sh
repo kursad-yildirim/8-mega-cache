@@ -1,4 +1,5 @@
 #!/bin/bash
+TAG=$1
 REGISTRY='registry.8-mega.io'
 CONTAINER='/usr/bin/docker'
 WORKSPACE='/home/workspace'
@@ -10,8 +11,8 @@ SERVICENAME="svc-redis";
 PORT=6379;
 
 sudo $CONTAINER pull $APP:$TAG
-sudo $CONTAINER tag $APP:$TAG $REGISTRY/$NAMESPACE/$APP:$TAG
-sudo $CONTAINER push $REGISTRY/$NAMESPACE/$APP:$TAG
+sudo $CONTAINER tag $APP:$TAG $REGISTRY/$NAMESPACE/$APP:$VERSION-$TAG
+sudo $CONTAINER push $REGISTRY/$NAMESPACE/$APP:$VERSION-$TAG
 
 # delete existing  kube resources
 rm -R $APPDIR/kube.resource.files/*.yaml
@@ -30,7 +31,7 @@ metadata:
 spec:
   containers:
   - name: $APP-container
-    image: $REGISTRY/$NAMESPACE/$APP:$TAG
+    image: $REGISTRY/$NAMESPACE/$APP:$VERSION-$TAG
     command:
       - redis-server
       - "/redis-master/redis.conf"
