@@ -84,7 +84,7 @@ spec:
   type: ClusterIP
   selector:
     app: $APP
- ports:
+  ports:
     - name: $APP-port
       protocol: TCP
       port: $APPPORT
