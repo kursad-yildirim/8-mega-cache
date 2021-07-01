@@ -8,7 +8,7 @@ APP="redis"
 VERSION='6.2.4-alpine3.13'
 APPDIR=$WORKSPACE/$NAMESPACE/$APP
 SERVICENAME="svc-redis";
-PORT=6379;
+APPPORT=6379;
 
 sudo $CONTAINER pull $APP:$VERSION
 sudo $CONTAINER tag $APP:$VERSION $REGISTRY/$NAMESPACE/$APP:$VERSION-$TAG
@@ -18,6 +18,7 @@ sudo $CONTAINER push $REGISTRY/$NAMESPACE/$APP:$VERSION-$TAG
 rm -R $APPDIR/kube.resource.files/*.yaml
 kubectl -n $NAMESPACE delete pod $APP
 kubectl -n $NAMESPACE delete configmap $APP
+kubectl -n $NAMESPACE delete svc $APP
 
 # Create k8s resource  yaml files
 cat > $APPDIR/kube.resource.files/$APP-pod.yaml << EOLPODYAML
@@ -71,7 +72,27 @@ data:
     maxmemory 2mb
     maxmemory-policy allkeys-lru 
 EOLCONFIGMAPYAML
+cat > $APPDIR/kube.resource.files/$APP-svc.yaml << EOLSVCYAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP
+  namespace: $NAMESPACE
+  labels:
+    app: $APP
+spec:
+  type: ClusterIP
+  selector:
+    app: $APP
+ ports:
+    - name: $APP-port
+      protocol: TCP
+      port: $APPPORT
+      targetPort: $APPPORT
+EOLSVCYAML
+
 
 # create new kube resources
 kubectl create -f $APPDIR/kube.resource.files/$APP-configmap.yaml
+kubectl create -f $APPDIR/kube.resource.files/$APP-svc.yaml
 kubectl create -f $APPDIR/kube.resource.files/$APP-pod.yaml
