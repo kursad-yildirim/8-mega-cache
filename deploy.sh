@@ -40,7 +40,7 @@ spec:
     - name: MASTER
       value: "true"
     ports:
-    - containerPort: $PORT
+    - containerPort: $APPPORT
     resources:
       limits:
         cpu: "0.1"
