@@ -76,7 +76,7 @@ cat > $APPDIR/kube.resource.files/$APP-svc.yaml << EOLSVCYAML
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP
+  name: svc-$APP
   namespace: $NAMESPACE
   labels:
     app: $APP
